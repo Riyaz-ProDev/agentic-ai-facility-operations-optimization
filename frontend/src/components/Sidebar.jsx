@@ -19,6 +19,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import BuildIcon from "@mui/icons-material/Build";
 import SecurityIcon from "@mui/icons-material/Security";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 
 const drawerWidth = 220;
 const collapsedWidth = 70;
@@ -64,9 +65,12 @@ export default function Sidebar({
 }) {
   const navigate = useNavigate();
 
+  const currentPath = window.location.pathname;
+
   const handleSectionClick = (id) => {
-    // If we are on another page, return to dashboard first.
-    if (window.location.pathname !== "/") {
+    // If user is on another page,
+    // return to dashboard first
+    if (currentPath !== "/") {
       navigate("/");
 
       setTimeout(() => {
@@ -90,20 +94,33 @@ export default function Sidebar({
     <Drawer
       variant="permanent"
       sx={{
-        width: collapsed ? collapsedWidth : drawerWidth,
+        width: collapsed
+          ? collapsedWidth
+          : drawerWidth,
+
         flexShrink: 0,
 
         "& .MuiDrawer-paper": {
-          width: collapsed ? collapsedWidth : drawerWidth,
+          width: collapsed
+            ? collapsedWidth
+            : drawerWidth,
+
           transition: "width 0.3s ease",
+
           overflowX: "hidden",
+
           background: "#1e293b",
+
           color: "white",
+
           borderRight: "none",
         },
       }}
     >
+      {/* ========================= */}
       {/* Collapse Button */}
+      {/* ========================= */}
+
       <Box
         sx={{
           display: "flex",
@@ -112,24 +129,36 @@ export default function Sidebar({
         }}
       >
         <IconButton
-          onClick={() => setCollapsed(!collapsed)}
-          sx={{ color: "white" }}
+          onClick={() =>
+            setCollapsed(!collapsed)
+          }
+          sx={{
+            color: "white",
+          }}
         >
           <MenuIcon />
         </IconButton>
       </Box>
 
       <List>
+        {/* ========================= */}
         {/* Previous Milestone Sections */}
+        {/* ========================= */}
 
         {menuItems.map((item) => (
           <Tooltip
             key={item.id}
-            title={collapsed ? item.text : ""}
+            title={
+              collapsed
+                ? item.text
+                : ""
+            }
             placement="right"
           >
             <ListItemButton
-              onClick={() => handleSectionClick(item.id)}
+              onClick={() =>
+                handleSectionClick(item.id)
+              }
               sx={{
                 mx: 1,
                 mb: 1,
@@ -141,7 +170,7 @@ export default function Sidebar({
 
                 backgroundColor:
                   activeSection === item.id &&
-                  window.location.pathname === "/"
+                  currentPath === "/"
                     ? "#2563eb"
                     : "transparent",
 
@@ -153,28 +182,44 @@ export default function Sidebar({
               <ListItemIcon
                 sx={{
                   color: "white",
-                  minWidth: collapsed ? 0 : 40,
-                  justifyContent: "center",
+
+                  minWidth: collapsed
+                    ? 0
+                    : 40,
+
+                  justifyContent:
+                    "center",
                 }}
               >
                 {item.icon}
               </ListItemIcon>
 
               {!collapsed && (
-                <ListItemText primary={item.text} />
+                <ListItemText
+                  primary={item.text}
+                />
               )}
             </ListItemButton>
           </Tooltip>
         ))}
 
+        {/* ========================= */}
         {/* Milestone 3 */}
+        {/* Occupancy & Security */}
+        {/* ========================= */}
 
         <Tooltip
-          title={collapsed ? "Occupancy & Security" : ""}
+          title={
+            collapsed
+              ? "Occupancy & Security"
+              : ""
+          }
           placement="right"
         >
           <ListItemButton
-            onClick={() => navigate("/security")}
+            onClick={() =>
+              navigate("/security")
+            }
             sx={{
               mx: 1,
               mb: 1,
@@ -185,7 +230,7 @@ export default function Sidebar({
                 : "flex-start",
 
               backgroundColor:
-                window.location.pathname === "/security"
+                currentPath === "/security"
                   ? "#2563eb"
                   : "transparent",
 
@@ -197,15 +242,81 @@ export default function Sidebar({
             <ListItemIcon
               sx={{
                 color: "white",
-                minWidth: collapsed ? 0 : 40,
-                justifyContent: "center",
+
+                minWidth: collapsed
+                  ? 0
+                  : 40,
+
+                justifyContent:
+                  "center",
               }}
             >
               <SecurityIcon />
             </ListItemIcon>
 
             {!collapsed && (
-              <ListItemText primary="Occupancy & Security" />
+              <ListItemText
+                primary="Occupancy & Security"
+              />
+            )}
+          </ListItemButton>
+        </Tooltip>
+
+        {/* ========================= */}
+        {/* Milestone 4 */}
+        {/* Executive Dashboard */}
+        {/* ========================= */}
+
+        <Tooltip
+          title={
+            collapsed
+              ? "Executive Dashboard"
+              : ""
+          }
+          placement="right"
+        >
+          <ListItemButton
+            onClick={() =>
+              navigate("/executive")
+            }
+            sx={{
+              mx: 1,
+              mb: 1,
+              borderRadius: 2,
+
+              justifyContent: collapsed
+                ? "center"
+                : "flex-start",
+
+              backgroundColor:
+                currentPath === "/executive"
+                  ? "#2563eb"
+                  : "transparent",
+
+              "&:hover": {
+                backgroundColor: "#334155",
+              },
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                color: "white",
+
+                minWidth: collapsed
+                  ? 0
+                  : 40,
+
+                justifyContent:
+                  "center",
+              }}
+            >
+              <AssessmentIcon />
+            </ListItemIcon>
+
+            {!collapsed && (
+              <ListItemText
+                primary="Executive Dashboard"
+              />
             )}
           </ListItemButton>
         </Tooltip>

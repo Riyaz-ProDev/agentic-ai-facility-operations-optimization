@@ -10,6 +10,9 @@ import AIAgent from "./pages/AIAgent";
 // Milestone 3
 import SecurityDashboard from "./pages/SecurityDashboard";
 
+//milestone 4
+
+import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 function App() {
   return (
     <BrowserRouter>
@@ -47,6 +50,11 @@ function App() {
           path="/security"
           element={<SecurityDashboard />}
         />
+
+        <Route
+  path="/executive"
+  element={<ExecutiveDashboard />}
+/>
 
       </Routes>
     </BrowserRouter>

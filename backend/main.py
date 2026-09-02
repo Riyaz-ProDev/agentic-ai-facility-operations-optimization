@@ -6,8 +6,12 @@ from security_agent import get_security_alerts
 from room_agent import get_room_utilization_insights
 from cctv_agent import get_cctv_alerts
 
+from cost_optimization_agent import get_cost_optimization_recommendations
+
+from cross_agent_orchestrator import get_enterprise_intelligence
 app = FastAPI(title="Agentic FacilityOps API")
 
+from facility_intelligence_report import generate_facility_intelligence_report
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -23,6 +27,78 @@ app.add_middleware(
 def security_alerts():
     return get_security_alerts()
 
+@app.get("/cost-optimization")
+def cost_optimization():
+    return get_cost_optimization_recommendations()
+
+@app.get("/cost-optimization-summary")
+def cost_optimization_summary():
+
+    recommendations = get_cost_optimization_recommendations()
+
+    if not recommendations:
+        return {
+            "total_facilities": 0,
+            "total_operational_cost": 0,
+            "total_estimated_savings": 0,
+            "high_priority_facilities": 0,
+            "medium_priority_facilities": 0,
+            "low_priority_facilities": 0,
+            "total_opportunities": 0
+        }
+
+    total_operational_cost = sum(
+        item["total_cost"]
+        for item in recommendations
+    )
+
+    total_estimated_savings = sum(
+        item["estimated_saving"]
+        for item in recommendations
+    )
+
+    high_priority = sum(
+        1 for item in recommendations
+        if item["priority"] == "High"
+    )
+
+    medium_priority = sum(
+        1 for item in recommendations
+        if item["priority"] == "Medium"
+    )
+
+    low_priority = sum(
+        1 for item in recommendations
+        if item["priority"] == "Low"
+    )
+
+    return {
+        "total_facilities": len(recommendations),
+
+        "total_operational_cost": round(
+            total_operational_cost, 2
+        ),
+
+        "total_estimated_savings": round(
+            total_estimated_savings, 2
+        ),
+
+        "high_priority_facilities": high_priority,
+
+        "medium_priority_facilities": medium_priority,
+
+        "low_priority_facilities": low_priority,
+
+        "total_opportunities": len(recommendations)
+    }
+
+@app.get("/enterprise-intelligence")
+def enterprise_intelligence():
+    return get_enterprise_intelligence()
+
+@app.get("/facility-intelligence-report")
+def facility_intelligence_report():
+    return generate_facility_intelligence_report()
 @app.get("/cctv-alerts")
 def cctv_alerts():
     return get_cctv_alerts()
@@ -111,6 +187,46 @@ def access_monitoring():
 
     return data
 
+@app.get("/cost-distribution")
+def cost_distribution():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT
+            ROUND(SUM(Energy_Cost_INR), 2) AS energy_cost
+        FROM energy_usage
+    """)
+
+    result = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    energy_cost = float(result["energy_cost"] or 0)
+
+    maintenance_cost = round(energy_cost * 0.25, 2)
+    security_cost = round(energy_cost * 0.18, 2)
+    other_cost = round(energy_cost * 0.12, 2)
+
+    return [
+        {
+            "name": "Energy",
+            "value": energy_cost
+        },
+        {
+            "name": "Maintenance",
+            "value": maintenance_cost
+        },
+        {
+            "name": "Security",
+            "value": security_cost
+        },
+        {
+            "name": "Other",
+            "value": other_cost
+        }
+    ]
 @app.get("/cctv-summary")
 def cctv_summary():
     conn = get_connection()
@@ -234,6 +350,215 @@ def room_utilization_summary():
 
     return data
 
+@app.get("/agent-performance")
+def agent_performance():
+
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+
+        # ---------------------------------------------
+        # ENERGY / COST AGENT
+        # ---------------------------------------------
+
+        cursor.execute("""
+            SELECT COUNT(DISTINCT Facility_ID) AS total
+            FROM energy_usage
+        """)
+
+        energy_result = cursor.fetchone()
+
+        energy_facilities = int(
+            energy_result["total"] or 0
+        )
+
+
+        # ---------------------------------------------
+        # OCCUPANCY AGENT
+        # ---------------------------------------------
+
+        cursor.execute("""
+            SELECT COUNT(DISTINCT Facility_ID) AS total
+            FROM room_utilization
+        """)
+
+        occupancy_result = cursor.fetchone()
+
+        occupancy_facilities = int(
+            occupancy_result["total"] or 0
+        )
+
+
+        # ---------------------------------------------
+        # MAINTENANCE AGENT
+        # ---------------------------------------------
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total,
+                   SUM(
+                       CASE
+                           WHEN health_status = 'Critical'
+                           THEN 1
+                           ELSE 0
+                       END
+                   ) AS critical
+            FROM equipment_health
+        """)
+
+        maintenance_result = cursor.fetchone()
+
+        total_equipment = int(
+            maintenance_result["total"] or 0
+        )
+
+        critical_equipment = int(
+            maintenance_result["critical"] or 0
+        )
+
+
+        # ---------------------------------------------
+        # SECURITY AGENT
+        # ---------------------------------------------
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM access_events
+        """)
+
+        security_result = cursor.fetchone()
+
+        security_events = int(
+            security_result["total"] or 0
+        )
+
+
+        # ---------------------------------------------
+        # CCTV AGENT
+        # ---------------------------------------------
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM cctv_events
+        """)
+
+        cctv_result = cursor.fetchone()
+
+        cctv_events = int(
+            cctv_result["total"] or 0
+        )
+
+
+        # =============================================
+        # PERFORMANCE SCORE CALCULATION
+        # =============================================
+
+        # Energy Agent
+        cost_agent_score = min(
+            100,
+            70 + energy_facilities * 0.5
+        )
+
+
+        # Occupancy Agent
+        occupancy_agent_score = min(
+            100,
+            70 + occupancy_facilities * 0.5
+        )
+
+
+        # Room Agent
+        room_agent_score = min(
+            100,
+            75 + occupancy_facilities * 0.4
+        )
+
+
+        # Security Agent
+        security_agent_score = min(
+            100,
+            70 + min(security_events, 1000) * 0.02
+        )
+
+
+        # CCTV Agent
+        cctv_agent_score = min(
+            100,
+            70 + min(cctv_events, 1000) * 0.02
+        )
+
+
+        # Maintenance Agent
+        if total_equipment > 0:
+
+            healthy_ratio = (
+                total_equipment - critical_equipment
+            ) / total_equipment
+
+            maintenance_agent_score = (
+                healthy_ratio * 100
+            )
+
+        else:
+
+            maintenance_agent_score = 0
+
+
+        return [
+            {
+                "agent": "Cost Optimization Agent",
+                "status": "Active",
+                "performance": round(
+                    cost_agent_score,
+                    2
+                )
+            },
+            {
+                "agent": "Occupancy Agent",
+                "status": "Active",
+                "performance": round(
+                    occupancy_agent_score,
+                    2
+                )
+            },
+            {
+                "agent": "Room Utilization Agent",
+                "status": "Active",
+                "performance": round(
+                    room_agent_score,
+                    2
+                )
+            },
+            {
+                "agent": "Security Agent",
+                "status": "Active",
+                "performance": round(
+                    security_agent_score,
+                    2
+                )
+            },
+            {
+                "agent": "CCTV Agent",
+                "status": "Active",
+                "performance": round(
+                    cctv_agent_score,
+                    2
+                )
+            },
+            {
+                "agent": "Maintenance Agent",
+                "status": "Active",
+                "performance": round(
+                    maintenance_agent_score,
+                    2
+                )
+            }
+        ]
+
+    finally:
+
+        cursor.close()
+        conn.close()
 @app.get("/overcrowding-alerts")
 def overcrowding_alerts():
     conn = get_connection()

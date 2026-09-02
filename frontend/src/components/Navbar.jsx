@@ -13,7 +13,7 @@ mr:0
     >
       <Toolbar>
         <Typography variant="h5" fontWeight="bold">
-          ⚡ Agentic FacilityOps Energy Intelligence Platform
+          ⚡ Agentic AI For Smart Facility Operations And Optimizations
         </Typography>
       </Toolbar>
     </AppBar>
