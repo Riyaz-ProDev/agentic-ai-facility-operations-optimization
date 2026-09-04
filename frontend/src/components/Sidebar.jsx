@@ -70,8 +70,8 @@ export default function Sidebar({
   const handleSectionClick = (id) => {
     // If user is on another page,
     // return to dashboard first
-    if (currentPath !== "/") {
-      navigate("/");
+    if (currentPath !== "/dashboard") {
+      navigate("/dashboard");
 
       setTimeout(() => {
         const section = document.getElementById(id);
@@ -170,7 +170,7 @@ export default function Sidebar({
 
                 backgroundColor:
                   activeSection === item.id &&
-                  currentPath === "/"
+                  currentPath === "/dashboard"
                     ? "#2563eb"
                     : "transparent",
 

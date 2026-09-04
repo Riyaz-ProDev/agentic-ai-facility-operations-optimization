@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   CardContent,
-  Divider,
   TextField,
   Typography,
   Stack,
@@ -11,22 +10,17 @@ import {
   CircularProgress
 } from "@mui/material";
 
-import GoogleIcon from "@mui/icons-material/Google";
 import BoltIcon from "@mui/icons-material/Bolt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { signInWithPopup } from "firebase/auth";
-import {
-  auth,
-  googleProvider
-} from "../firebaseConfig";
-
 function Login() {
   const navigate = useNavigate();
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -37,49 +31,82 @@ function Login() {
     "Cost Optimization"
   ];
 
-  const handleGoogleLogin = async () => {
+  const handleLogin = async () => {
+    // Validate fields
+    if (!username.trim() || !password.trim()) {
+      setError("Please enter username and password.");
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
 
-      const result = await signInWithPopup(
-        auth,
-        googleProvider
+      console.log("Trying login:", username);
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            email: username.trim(),
+            password: password
+          })
+        }
       );
 
       console.log(
-        "Logged in user:",
-        result.user
+        "Response status:",
+        response.status
       );
 
-      navigate("/");
-    } catch (error) {
-      console.error(
-        "Google Login Error:",
-        error
+      const data = await response.json();
+
+      console.log(
+        "Login response:",
+        data
       );
 
-      if (
-        error.code ===
-        "auth/popup-closed-by-user"
-      ) {
-        setError(
-          "Google sign-in was cancelled."
+      if (data.success === true) {
+        // Store logged-in user
+        localStorage.setItem(
+          "facilityUser",
+          JSON.stringify(data.user)
         );
-      } else if (
-        error.code ===
-        "auth/unauthorized-domain"
-      ) {
-        setError(
-          "This domain is not authorized in Firebase Authentication."
+
+        console.log(
+          "Login successful. Redirecting..."
         );
+
+        // Go to dashboard
+        navigate("/dashboard");
       } else {
         setError(
-          "Unable to sign in with Google. Please try again."
+          data.message ||
+            "Invalid username or password."
         );
       }
+    } catch (err) {
+      console.error(
+        "Login request failed:",
+        err
+      );
+
+      setError(
+        "Unable to connect to FacilityOps server."
+      );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleLogin();
     }
   };
 
@@ -90,8 +117,10 @@ function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+
         background:
           "linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #1d4ed8 100%)",
+
         px: 2,
         py: 4
       }}
@@ -108,13 +137,14 @@ function Login() {
         <Box
           sx={{
             display: "grid",
+
             gridTemplateColumns: {
               xs: "1fr",
               md: "1fr 1fr"
             }
           }}
         >
-          {/* LEFT SECTION */}
+          {/* LEFT SIDE */}
 
           <Box
             sx={{
@@ -122,9 +152,12 @@ function Login() {
                 xs: 4,
                 md: 6
               },
+
               background:
                 "linear-gradient(160deg, #0f172a 0%, #1e3a8a 100%)",
+
               color: "white",
+
               display: "flex",
               flexDirection: "column",
               justifyContent: "center"
@@ -160,8 +193,8 @@ function Login() {
                 mb: 2
               }}
             >
-              Agentic AI For Smart
-              Facility Operations
+              Agentic AI For Smart Facility
+              Operations
             </Typography>
 
             <Typography
@@ -169,49 +202,45 @@ function Login() {
               sx={{
                 color:
                   "rgba(255,255,255,0.78)",
+
                 mb: 4,
                 lineHeight: 1.8
               }}
             >
-              Monitor facilities,
-              optimize resources,
-              reduce operational costs
-              and improve decisions
-              using intelligent AI
-              agents.
+              Monitor facilities, analyze
+              operational performance and manage
+              intelligent facility operations from
+              one centralized platform.
             </Typography>
 
             <Stack spacing={2}>
-              {features.map(
-                (feature) => (
-                  <Box
-                    key={feature}
+              {features.map((feature) => (
+                <Box
+                  key={feature}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5
+                  }}
+                >
+                  <CheckCircleIcon
                     sx={{
-                      display: "flex",
-                      alignItems:
-                        "center",
-                      gap: 1.5
+                      fontSize: 21
                     }}
-                  >
-                    <CheckCircleIcon
-                      sx={{
-                        fontSize: 21
-                      }}
-                    />
+                  />
 
-                    <Typography
-                      variant="body1"
-                      fontWeight={500}
-                    >
-                      {feature}
-                    </Typography>
-                  </Box>
-                )
-              )}
+                  <Typography
+                    variant="body1"
+                    fontWeight={500}
+                  >
+                    {feature}
+                  </Typography>
+                </Box>
+              ))}
             </Stack>
           </Box>
 
-          {/* RIGHT SECTION */}
+          {/* RIGHT SIDE */}
 
           <CardContent
             sx={{
@@ -219,6 +248,7 @@ function Login() {
                 xs: 4,
                 md: 6
               },
+
               display: "flex",
               flexDirection: "column",
               justifyContent: "center"
@@ -227,9 +257,7 @@ function Login() {
             <Typography
               variant="h4"
               fontWeight="bold"
-              sx={{
-                mb: 1
-              }}
+              sx={{ mb: 1 }}
             >
               Welcome Back
             </Typography>
@@ -237,22 +265,16 @@ function Login() {
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{
-                mb: 4
-              }}
+              sx={{ mb: 4 }}
             >
-              Sign in to access the
-              Agentic Facility
-              Operations Intelligence
-              Platform.
+              Login to monitor and manage the
+              FacilityOps platform.
             </Typography>
 
             {error && (
               <Alert
                 severity="error"
-                sx={{
-                  mb: 2
-                }}
+                sx={{ mb: 2 }}
               >
                 {error}
               </Alert>
@@ -260,53 +282,37 @@ function Login() {
 
             <TextField
               fullWidth
-              label="Email Address"
-              type="email"
-              placeholder="Enter your email"
-              sx={{
-                mb: 2
-              }}
+              label="Username"
+              placeholder="Enter username"
+              value={username}
+              onChange={(event) =>
+                setUsername(event.target.value)
+              }
+              onKeyDown={handleKeyDown}
+              autoComplete="username"
+              sx={{ mb: 2 }}
             />
 
             <TextField
               fullWidth
               label="Password"
               type="password"
-              placeholder="Enter your password"
-              sx={{
-                mb: 1
-              }}
+              placeholder="Enter password"
+              value={password}
+              onChange={(event) =>
+                setPassword(event.target.value)
+              }
+              onKeyDown={handleKeyDown}
+              autoComplete="current-password"
+              sx={{ mb: 3 }}
             />
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                mb: 3
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  cursor: "pointer",
-                  color:
-                    "primary.main",
-                  fontWeight: 600,
-                  "&:hover": {
-                    textDecoration:
-                      "underline"
-                  }
-                }}
-              >
-                Forgot Password?
-              </Typography>
-            </Box>
 
             <Button
               fullWidth
               variant="contained"
               size="large"
+              onClick={handleLogin}
+              disabled={loading}
               sx={{
                 py: 1.4,
                 borderRadius: 2,
@@ -315,63 +321,58 @@ function Login() {
                 fontWeight: "bold"
               }}
             >
-              Sign In
+              {loading ? (
+                <>
+                  <CircularProgress
+                    size={20}
+                    color="inherit"
+                    sx={{ mr: 1 }}
+                  />
+
+                  Signing In...
+                </>
+              ) : (
+                "Login to FacilityOps"
+              )}
             </Button>
 
-            <Divider
+            <Box
               sx={{
-                my: 3
+                mt: 4,
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: "#f8fafc"
               }}
             >
               <Typography
                 variant="body2"
                 color="text.secondary"
+                textAlign="center"
               >
-                OR
+                Authorized users only
               </Typography>
-            </Divider>
 
-            <Button
-              fullWidth
-              variant="outlined"
-              size="large"
-              onClick={
-                handleGoogleLogin
-              }
-              disabled={loading}
-              startIcon={
-                loading ? (
-                  <CircularProgress
-                    size={20}
-                  />
-                ) : (
-                  <GoogleIcon />
-                )
-              }
-              sx={{
-                py: 1.4,
-                borderRadius: 2,
-                textTransform: "none",
-                fontSize: 15,
-                fontWeight: 600
-              }}
-            >
-              {loading
-                ? "Signing in..."
-                : "Continue with Google"}
-            </Button>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                textAlign="center"
+                display="block"
+                sx={{ mt: 0.5 }}
+              >
+                Access facility monitoring, AI
+                insights, maintenance, security and
+                executive intelligence.
+              </Typography>
+            </Box>
 
             <Typography
               variant="caption"
               color="text.secondary"
               textAlign="center"
-              sx={{
-                mt: 4
-              }}
+              sx={{ mt: 3 }}
             >
-              Agentic AI For Smart
-              Facility Operations And
-              Optimizations
+              Agentic AI For Smart Facility
+              Operations And Optimizations
             </Typography>
           </CardContent>
         </Box>

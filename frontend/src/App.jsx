@@ -50,8 +50,13 @@ function App() {
       <Routes>
 
         {/* ================================= */}
-        {/* Login */}
+        {/* Login - Starting Page */}
         {/* ================================= */}
+
+        <Route
+          path="/"
+          element={<Login />}
+        />
 
         <Route
           path="/login"
@@ -64,7 +69,7 @@ function App() {
         {/* ================================= */}
 
         <Route
-          path="/"
+          path="/dashboard"
           element={<Dashboard />}
         />
 

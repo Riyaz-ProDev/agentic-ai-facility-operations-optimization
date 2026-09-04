@@ -11,6 +11,14 @@ from cost_optimization_agent import get_cost_optimization_recommendations
 from cross_agent_orchestrator import get_enterprise_intelligence
 app = FastAPI(title="Agentic FacilityOps API")
 
+
+from pydantic import BaseModel
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+    
+    
 from facility_intelligence_report import generate_facility_intelligence_report
 app.add_middleware(
     CORSMiddleware,
@@ -92,6 +100,55 @@ def cost_optimization_summary():
         "total_opportunities": len(recommendations)
     }
 
+@app.post("/login")
+def login_user(login_data: LoginRequest):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+        """
+        SELECT
+            User_ID,
+            Name,
+            Email,
+            Password,
+            Role
+        FROM users
+        WHERE Email = %s
+        """,
+        (login_data.email,)
+    )
+
+    user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    print("LOGIN INPUT:", login_data.email, login_data.password)
+    print("DATABASE USER:", user)
+
+    if not user:
+        return {
+            "success": False,
+            "message": "Invalid username or password."
+        }
+
+    if user["Password"] != login_data.password:
+        return {
+            "success": False,
+            "message": "Invalid username or password."
+        }
+
+    return {
+        "success": True,
+        "message": "Login successful",
+        "user": {
+            "id": user["User_ID"],
+            "name": user["Name"],
+            "username": user["Email"],
+            "role": user["Role"]
+        }
+    }
 @app.get("/enterprise-intelligence")
 def enterprise_intelligence():
     return get_enterprise_intelligence()
