@@ -1,205 +1,765 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  LinearProgress,
+  Avatar,
+  Stack,
+  Divider
+} from "@mui/material";
+
+import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
+
+import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import BuildCircleIcon from "@mui/icons-material/BuildCircle";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import InsightsIcon from "@mui/icons-material/Insights";
+
 function PredictiveMaintenance() {
 
-    const [dashboard, setDashboard] = useState({});
-    const [health, setHealth] = useState([]);
-    const [schedule, setSchedule] = useState([]);
-    const [alerts, setAlerts] = useState([]);
+  const [collapsed, setCollapsed] = useState(false);
 
-    useEffect(() => {
-        loadData();
-    }, []);
+  const [dashboard, setDashboard] = useState({});
+  const [health, setHealth] = useState([]);
+  const [schedule, setSchedule] = useState([]);
+  const [alerts, setAlerts] = useState([]);
 
-    const loadData = async () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-        const dashboardRes = await axios.get("http://127.0.0.1:8000/maintenance-dashboard");
-        const healthRes = await axios.get("http://127.0.0.1:8000/equipment-health");
-        const scheduleRes = await axios.get("http://127.0.0.1:8000/maintenance-schedule");
-        const alertRes = await axios.get("http://127.0.0.1:8000/recent-maintenance-alerts");
+  useEffect(() => {
+    loadData();
+  }, []);
 
-        setDashboard(dashboardRes.data);
-        setHealth(healthRes.data);
-        setSchedule(scheduleRes.data);
-        setAlerts(alertRes.data);
-    };
+  const loadData = async () => {
 
-    return (
-        <div className="container mt-4">
+    try {
 
-            <h2 className="mb-4">
-                Predictive Maintenance Dashboard
-            </h2>
+      setLoading(true);
+      setError("");
 
-            {/* KPI Cards */}
+      const [
+        dashboardRes,
+        healthRes,
+        scheduleRes,
+        alertRes
+      ] = await Promise.all([
+        axios.get("http://127.0.0.1:8000/maintenance-dashboard"),
+        axios.get("http://127.0.0.1:8000/equipment-health"),
+        axios.get("http://127.0.0.1:8000/maintenance-schedule"),
+        axios.get("http://127.0.0.1:8000/recent-maintenance-alerts")
+      ]);
 
-            <div className="row">
+      setDashboard(dashboardRes.data);
+      setHealth(healthRes.data);
+      setSchedule(scheduleRes.data);
+      setAlerts(alertRes.data);
 
-                <div className="col-md-3">
-                    <div className="card shadow p-3">
-                        <h6>Total Assets</h6>
-                        <h2>{dashboard.total_assets}</h2>
-                    </div>
-                </div>
+    } catch (err) {
 
-                <div className="col-md-3">
-                    <div className="card shadow p-3">
-                        <h6>Healthy</h6>
-                        <h2>{dashboard.healthy_assets}</h2>
-                    </div>
-                </div>
+      console.error("Predictive Maintenance Error:", err);
 
-                <div className="col-md-3">
-                    <div className="card shadow p-3">
-                        <h6>Critical</h6>
-                        <h2>{dashboard.critical_assets}</h2>
-                    </div>
-                </div>
+      setError(
+        "Unable to load predictive maintenance data."
+      );
 
-                <div className="col-md-3">
-                    <div className="card shadow p-3">
-                        <h6>Active Alerts</h6>
-                        <h2>{dashboard.active_alerts}</h2>
-                    </div>
-                </div>
+    } finally {
 
-            </div>
+      setLoading(false);
 
-            <br />
+    }
 
-            {/* Equipment Health */}
+  };
 
-            <div className="card shadow">
+  const getStatusColor = (status) => {
 
-                <div className="card-header">
-                    Equipment Health
-                </div>
+    const value = String(status || "").toLowerCase();
 
-                <div className="card-body">
+    if (value.includes("healthy")) return "success";
 
-                    <table className="table table-striped">
+    if (value.includes("critical")) return "error";
 
-                        <thead>
+    if (value.includes("high")) return "error";
 
-                            <tr>
-                                <th>Asset</th>
-                                <th>Score</th>
-                                <th>Status</th>
-                            </tr>
+    if (value.includes("warning")) return "warning";
 
-                        </thead>
+    if (value.includes("medium")) return "warning";
 
-                        <tbody>
+    return "default";
+  };
 
-                            {
-                                health.slice(0,10).map((item)=>(
-                                    <tr key={item.health_id}>
-                                        <td>{item.asset_id}</td>
-                                        <td>{item.health_score}</td>
-                                        <td>{item.health_status}</td>
-                                    </tr>
-                                ))
-                            }
+  const getScoreColor = (score) => {
 
-                        </tbody>
+    if (score >= 80) return "#16a34a";
 
-                    </table>
+    if (score >= 50) return "#f59e0b";
 
-                </div>
+    return "#dc2626";
+  };
 
-            </div>
+  const cards = [
+    {
+      title: "Total Assets",
+      value: dashboard.total_assets ?? 0,
+      subtitle: "Monitored equipment",
+      icon: <PrecisionManufacturingIcon />,
+      color: "#2563eb",
+      bg: "#dbeafe"
+    },
+    {
+      title: "Healthy Assets",
+      value: dashboard.healthy_assets ?? 0,
+      subtitle: "Operating normally",
+      icon: <HealthAndSafetyIcon />,
+      color: "#16a34a",
+      bg: "#dcfce7"
+    },
+    {
+      title: "Critical Assets",
+      value: dashboard.critical_assets ?? 0,
+      subtitle: "Immediate attention",
+      icon: <WarningAmberIcon />,
+      color: "#dc2626",
+      bg: "#fee2e2"
+    },
+    {
+      title: "Active Alerts",
+      value: dashboard.active_alerts ?? 0,
+      subtitle: "Live maintenance alerts",
+      icon: <NotificationsActiveIcon />,
+      color: "#ea580c",
+      bg: "#ffedd5"
+    }
+  ];
 
-            <br />
+  return (
 
-            {/* Maintenance Schedule */}
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        bgcolor: "#f4f7fb"
+      }}
+    >
 
-            <div className="card shadow">
+      <Sidebar
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+      />
 
-                <div className="card-header">
-                    Maintenance Schedule
-                </div>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          minWidth: 0,
+          px: {
+            xs: 2,
+            md: 3
+          },
+          py: 2
+        }}
+      >
 
-                <div className="card-body">
+        <Box
+          sx={{
+            maxWidth: "1500px",
+            mx: "auto"
+          }}
+        >
 
-                    <table className="table table-bordered">
+          <Navbar />
 
-                        <thead>
+          {/* HERO HEADER */}
 
-                            <tr>
-                                <th>Asset</th>
-                                <th>Date</th>
-                                <th>Priority</th>
-                            </tr>
+          <Box
+            sx={{
+              mt: 3,
+              mb: 3,
+              p: {
+                xs: 2.5,
+                md: 4
+              },
+              borderRadius: 4,
+              background:
+                "linear-gradient(135deg,#7c2d12,#ea580c)",
+              color: "white",
+              position: "relative",
+              overflow: "hidden"
+            }}
+          >
 
-                        </thead>
+            <Box
+              sx={{
+                position: "absolute",
+                right: -30,
+                top: -30,
+                width: 180,
+                height: 180,
+                borderRadius: "50%",
+                bgcolor: "rgba(255,255,255,0.08)"
+              }}
+            />
 
-                        <tbody>
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+            >
 
-                            {
-                                schedule.slice(0,10).map((item)=>(
-                                    <tr key={item.schedule_id}>
-                                        <td>{item.asset_id}</td>
-                                        <td>{item.predicted_date}</td>
-                                        <td>{item.priority}</td>
-                                    </tr>
-                                ))
-                            }
+              <Avatar
+                sx={{
+                  bgcolor: "rgba(255,255,255,0.18)",
+                  width: 60,
+                  height: 60
+                }}
+              >
+                <BuildCircleIcon fontSize="large"/>
+              </Avatar>
 
-                        </tbody>
+              <Box>
 
-                    </table>
+                <Typography
+                  variant="h4"
+                  fontWeight="bold"
+                >
+                  Predictive Maintenance
+                </Typography>
 
-                </div>
+                <Typography
+                  sx={{
+                    opacity: 0.9,
+                    mt: 0.5
+                  }}
+                >
+                  AI-powered equipment health monitoring and intelligent maintenance planning.
+                </Typography>
 
-            </div>
+              </Box>
 
-            <br />
+            </Stack>
 
-            {/* Recent Alerts */}
+          </Box>
 
-            <div className="card shadow">
+          {error && (
 
-                <div className="card-header">
-                    Recent Alerts
-                </div>
+            <Alert
+              severity="error"
+              sx={{ mb: 3 }}
+            >
+              {error}
+            </Alert>
 
-                <div className="card-body">
+          )}
 
-                    <table className="table table-hover">
+          {loading ? (
 
-                        <thead>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                py: 12
+              }}
+            >
+              <CircularProgress size={45}/>
+            </Box>
 
-                            <tr>
-                                <th>Asset</th>
-                                <th>Severity</th>
-                                <th>Message</th>
-                            </tr>
+          ) : (
 
-                        </thead>
+            <>
 
-                        <tbody>
+              {/* KPI CARDS */}
 
-                            {
-                                alerts.map((item)=>(
-                                    <tr key={item.alert_id}>
-                                        <td>{item.asset_id}</td>
-                                        <td>{item.severity}</td>
-                                        <td>{item.message}</td>
-                                    </tr>
-                                ))
-                            }
+              <Grid container spacing={3}>
 
-                        </tbody>
+                {cards.map((card) => (
 
-                    </table>
+                  <Grid
+                    key={card.title}
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      lg: 3
+                    }}
+                  >
 
-                </div>
+                    <Card
+                      sx={{
+                        borderRadius: 4,
+                        height: "100%",
+                        border: "1px solid #eef2f7",
+                        transition: "0.25s",
+                        "&:hover": {
+                          transform: "translateY(-6px)",
+                          boxShadow: 6
+                        }
+                      }}
+                    >
 
-            </div>
+                      <CardContent>
 
-        </div>
-    );
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+
+                          <Box>
+
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              {card.title}
+                            </Typography>
+
+                            <Typography
+                              variant="h4"
+                              fontWeight="bold"
+                              sx={{
+                                mt: 1,
+                                color: card.color
+                              }}
+                            >
+                              {card.value}
+                            </Typography>
+
+                          </Box>
+
+                          <Avatar
+                            sx={{
+                              bgcolor: card.bg,
+                              color: card.color,
+                              width: 52,
+                              height: 52
+                            }}
+                          >
+                            {card.icon}
+                          </Avatar>
+
+                        </Stack>
+
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            display: "block",
+                            mt: 2
+                          }}
+                        >
+                          {card.subtitle}
+                        </Typography>
+
+                      </CardContent>
+
+                    </Card>
+
+                  </Grid>
+
+                ))}
+
+              </Grid>
+
+              {/* EQUIPMENT HEALTH */}
+
+              <Card
+                sx={{
+                  mt: 3,
+                  borderRadius: 4,
+                  overflow: "hidden"
+                }}
+              >
+
+                <Box
+                  sx={{
+                    px: 3,
+                    py: 2,
+                    background:
+                      "linear-gradient(90deg,#ffffff,#fff7ed)",
+                    borderBottom: "1px solid #eee"
+                  }}
+                >
+
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
+
+                    <InsightsIcon color="warning"/>
+
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                    >
+                      Equipment Health Intelligence
+                    </Typography>
+
+                  </Stack>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 0.5 }}
+                  >
+                    Real-time AI assessment of equipment condition.
+                  </Typography>
+
+                </Box>
+
+                <TableContainer>
+
+                  <Table>
+
+                    <TableHead>
+
+                      <TableRow
+                        sx={{
+                          bgcolor: "#f8fafc"
+                        }}
+                      >
+
+                        <TableCell>
+                          <b>Asset ID</b>
+                        </TableCell>
+
+                        <TableCell>
+                          <b>Health Score</b>
+                        </TableCell>
+
+                        <TableCell>
+                          <b>Condition</b>
+                        </TableCell>
+
+                      </TableRow>
+
+                    </TableHead>
+
+                    <TableBody>
+
+                      {health
+                        .slice(0,10)
+                        .map((item)=>(
+                          <TableRow
+                            key={item.health_id}
+                            hover
+                          >
+
+                            <TableCell>
+                              <Typography fontWeight={600}>
+                                {item.asset_id}
+                              </Typography>
+                            </TableCell>
+
+                            <TableCell sx={{ minWidth: 180 }}>
+
+                              <Stack spacing={0.7}>
+
+                                <Stack
+                                  direction="row"
+                                  justifyContent="space-between"
+                                >
+
+                                  <Typography fontWeight={600}>
+                                    {item.health_score}
+                                  </Typography>
+
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                  >
+                                    /100
+                                  </Typography>
+
+                                </Stack>
+
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={item.health_score}
+                                  sx={{
+                                    height: 8,
+                                    borderRadius: 5,
+                                    bgcolor: "#e5e7eb",
+                                    "& .MuiLinearProgress-bar":{
+                                      bgcolor:getScoreColor(item.health_score),
+                                      borderRadius: 5
+                                    }
+                                  }}
+                                />
+
+                              </Stack>
+
+                            </TableCell>
+
+                            <TableCell>
+
+                              <Chip
+                                label={item.health_status}
+                                color={getStatusColor(item.health_status)}
+                                size="small"
+                                sx={{ fontWeight: 600 }}
+                              />
+
+                            </TableCell>
+
+                          </TableRow>
+                        ))}
+
+                    </TableBody>
+
+                  </Table>
+
+                </TableContainer>
+
+              </Card>
+
+              {/* MAINTENANCE SCHEDULE */}
+
+              <Card
+                sx={{
+                  mt: 3,
+                  borderRadius: 4,
+                  overflow: "hidden"
+                }}
+              >
+
+                <Box
+                  sx={{
+                    px: 3,
+                    py: 2,
+                    background:
+                      "linear-gradient(90deg,#ffffff,#eff6ff)",
+                    borderBottom: "1px solid #eee"
+                  }}
+                >
+
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
+
+                    <CalendarMonthIcon color="primary"/>
+
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                    >
+                      Intelligent Maintenance Schedule
+                    </Typography>
+
+                  </Stack>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 0.5 }}
+                  >
+                    AI predicted maintenance planning for critical assets.
+                  </Typography>
+
+                </Box>
+
+                <TableContainer>
+
+                  <Table>
+
+                    <TableHead>
+
+                      <TableRow
+                        sx={{
+                          bgcolor:"#f8fafc"
+                        }}
+                      >
+
+                        <TableCell><b>Asset</b></TableCell>
+                        <TableCell><b>Predicted Date</b></TableCell>
+                        <TableCell><b>Priority</b></TableCell>
+
+                      </TableRow>
+
+                    </TableHead>
+
+                    <TableBody>
+
+                      {schedule
+                        .slice(0,10)
+                        .map((item)=>(
+                          <TableRow
+                            key={item.schedule_id}
+                            hover
+                          >
+
+                            <TableCell>
+                              <Typography fontWeight={600}>
+                                {item.asset_id}
+                              </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                              {item.predicted_date}
+                            </TableCell>
+
+                            <TableCell>
+
+                              <Chip
+                                label={item.priority}
+                                color={getStatusColor(item.priority)}
+                                size="small"
+                                sx={{ fontWeight:600 }}
+                              />
+
+                            </TableCell>
+
+                          </TableRow>
+                        ))}
+
+                    </TableBody>
+
+                  </Table>
+
+                </TableContainer>
+
+              </Card>
+
+              {/* ALERTS */}
+
+              <Card
+                sx={{
+                  mt:3,
+                  mb:5,
+                  borderRadius:4,
+                  overflow:"hidden"
+                }}
+              >
+
+                <Box
+                  sx={{
+                    px:3,
+                    py:2,
+                    background:
+                      "linear-gradient(90deg,#ffffff,#fef2f2)",
+                    borderBottom:"1px solid #eee"
+                  }}
+                >
+
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
+
+                    <NotificationsActiveIcon color="error"/>
+
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                    >
+                      Recent Maintenance Alerts
+                    </Typography>
+
+                  </Stack>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt:0.5 }}
+                  >
+                    Live alerts generated from predictive monitoring agents.
+                  </Typography>
+
+                </Box>
+
+                <TableContainer>
+
+                  <Table>
+
+                    <TableHead>
+
+                      <TableRow
+                        sx={{
+                          bgcolor:"#f8fafc"
+                        }}
+                      >
+
+                        <TableCell><b>Asset</b></TableCell>
+                        <TableCell><b>Severity</b></TableCell>
+                        <TableCell><b>Alert Message</b></TableCell>
+
+                      </TableRow>
+
+                    </TableHead>
+
+                    <TableBody>
+
+                      {alerts.map((item)=>(
+                        <TableRow
+                          key={item.alert_id}
+                          hover
+                        >
+
+                          <TableCell>
+
+                            <Typography fontWeight={600}>
+                              {item.asset_id}
+                            </Typography>
+
+                          </TableCell>
+
+                          <TableCell>
+
+                            <Chip
+                              label={item.severity}
+                              color={getStatusColor(item.severity)}
+                              size="small"
+                              sx={{ fontWeight:600 }}
+                            />
+
+                          </TableCell>
+
+                          <TableCell>
+                            {item.message}
+                          </TableCell>
+
+                        </TableRow>
+                      ))}
+
+                    </TableBody>
+
+                  </Table>
+
+                </TableContainer>
+
+              </Card>
+
+            </>
+
+          )}
+
+        </Box>
+
+      </Box>
+
+    </Box>
+
+  );
 }
 
 export default PredictiveMaintenance;

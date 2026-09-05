@@ -1,9 +1,11 @@
 import {
+  Box,
   Card,
   CardContent,
   Grid,
   Typography,
-  Box
+  Avatar,
+  Stack
 } from "@mui/material";
 
 import HealthAndSafetyIcon
@@ -32,151 +34,224 @@ function FacilityIntelligenceFeatures() {
       title: "Facility Health Score",
       description:
         "Monitors overall facility operational health.",
-      icon: <HealthAndSafetyIcon />
+      icon: <HealthAndSafetyIcon />,
+      color: "#16a34a",
+      background: "#dcfce7"
     },
+
     {
       title: "Operational Cost Analysis",
       description:
         "Analyzes facility energy and operational costs.",
-      icon: <AccountBalanceWalletIcon />
+      icon: <AccountBalanceWalletIcon />,
+      color: "#2563eb",
+      background: "#dbeafe"
     },
+
     {
       title: "Cost Saving Recommendations",
       description:
         "Identifies opportunities to reduce facility costs.",
-      icon: <SavingsIcon />
+      icon: <SavingsIcon />,
+      color: "#059669",
+      background: "#d1fae5"
     },
+
     {
       title: "Resource Utilization Analytics",
       description:
         "Analyzes occupancy and resource utilization patterns.",
-      icon: <AnalyticsIcon />
+      icon: <AnalyticsIcon />,
+      color: "#7c3aed",
+      background: "#ede9fe"
     },
+
     {
       title: "Agent Performance Monitoring",
       description:
         "Tracks operational performance of AI agents.",
-      icon: <SmartToyIcon />
+      icon: <SmartToyIcon />,
+      color: "#ea580c",
+      background: "#ffedd5"
     },
+
     {
       title: "Sustainability Metrics",
       description:
         "Tracks renewable energy and efficiency indicators.",
-      icon: <BoltIcon />
+      icon: <BoltIcon />,
+      color: "#0891b2",
+      background: "#cffafe"
     }
   ];
 
 
   return (
 
-    <Card
-      sx={{
-        borderRadius: 3,
-        boxShadow: 2
-      }}
-    >
+    <Box>
 
-      <CardContent>
+      {/* Section intro */}
+
+      <Box
+        sx={{
+          mb: 2.5
+        }}
+      >
 
         <Typography
           variant="h6"
-          fontWeight="bold"
-          sx={{ mb: 1 }}
+          fontWeight={700}
+          color="#0f172a"
         >
           🏢 Facility Intelligence Features
         </Typography>
 
-
         <Typography
           variant="body2"
           color="text.secondary"
-          sx={{ mb: 3 }}
+          sx={{
+            mt: 0.5
+          }}
         >
           Enterprise intelligence capabilities for
           facility monitoring, optimization and
           decision support.
         </Typography>
 
+      </Box>
 
-        <Grid container spacing={2}>
 
-          {features.map((feature) => (
+      <Grid
+        container
+        spacing={2}
+      >
 
-            <Grid
-              key={feature.title}
-              size={{
-                xs: 12,
-                sm: 6,
-                lg: 4
+        {features.map((feature) => (
+
+          <Grid
+            key={feature.title}
+            size={{
+              xs: 12,
+              sm: 6,
+              lg: 4
+            }}
+          >
+
+            <Card
+              sx={{
+                height: "100%",
+
+                borderRadius: 3,
+
+                border:
+                  "1px solid #e5e7eb",
+
+                boxShadow:
+                  "0 4px 15px rgba(15,23,42,0.05)",
+
+                position: "relative",
+
+                overflow: "hidden",
+
+                transition:
+                  "all 0.25s ease",
+
+                "&:hover": {
+                  transform:
+                    "translateY(-5px)",
+
+                  boxShadow:
+                    "0 12px 28px rgba(15,23,42,0.10)",
+
+                  borderColor:
+                    feature.color
+                },
+
+                "&::before": {
+                  content: '""',
+
+                  position: "absolute",
+
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+
+                  width: "4px",
+
+                  bgcolor:
+                    feature.color
+                }
               }}
             >
 
-              <Card
-                variant="outlined"
+              <CardContent
                 sx={{
-                  height: "100%",
-                  borderRadius: 2,
-                  transition: "0.3s",
-
-                  "&:hover": {
-                    transform: "translateY(-3px)",
-                    boxShadow: 3
-                  }
+                  p: 2.5
                 }}
               >
 
-                <CardContent>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="flex-start"
+                >
 
-                  <Box
+                  {/* Icon */}
+
+                  <Avatar
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1.5,
-                      mb: 1.5
+                      width: 48,
+                      height: 48,
+
+                      bgcolor:
+                        feature.background,
+
+                      color:
+                        feature.color
                     }}
                   >
+                    {feature.icon}
+                  </Avatar>
 
-                    <Box
+
+                  {/* Text */}
+
+                  <Box>
+
+                    <Typography
+                      fontWeight={700}
+                      color="#0f172a"
+                    >
+                      {feature.title}
+                    </Typography>
+
+
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
                       sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center"
+                        mt: 0.7,
+                        lineHeight: 1.6
                       }}
                     >
-                      {feature.icon}
-                    </Box>
-
-
-                    <Typography fontWeight="bold">
-                      {feature.title}
+                      {feature.description}
                     </Typography>
 
                   </Box>
 
+                </Stack>
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      lineHeight: 1.6
-                    }}
-                  >
-                    {feature.description}
-                  </Typography>
+              </CardContent>
 
-                </CardContent>
+            </Card>
 
-              </Card>
+          </Grid>
 
-            </Grid>
+        ))}
 
-          ))}
+      </Grid>
 
-        </Grid>
-
-      </CardContent>
-
-    </Card>
+    </Box>
 
   );
 

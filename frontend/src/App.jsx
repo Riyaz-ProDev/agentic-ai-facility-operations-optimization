@@ -13,19 +13,25 @@ import Login from "./pages/Login";
 
 
 // ==========================================
-// Previous Milestones
+// Module 1
+// Energy Intelligence
 // ==========================================
 
-import Dashboard from "./pages/Dashboard";
 import Energy from "./pages/Energy";
-import Sensors from "./pages/Sensors";
-import Facilities from "./pages/Facilities";
-import AIAgent from "./pages/AIAgent";
 
 
 // ==========================================
-// Milestone 3
-// Occupancy & Security
+// Module 2
+// Predictive Maintenance
+// ==========================================
+
+import PredictiveMaintenance
+  from "./pages/PredictiveMaintenance";
+
+
+// ==========================================
+// Module 3
+// Occupancy & Security Monitoring
 // ==========================================
 
 import SecurityDashboard
@@ -33,8 +39,8 @@ import SecurityDashboard
 
 
 // ==========================================
-// Milestone 4
-// Executive Intelligence
+// Module 4
+// Cost Optimization
 // ==========================================
 
 import ExecutiveDashboard
@@ -65,75 +71,48 @@ function App() {
 
 
         {/* ================================= */}
-        {/* Main Dashboard */}
+        {/* Module 1 */}
+        {/* Energy Intelligence */}
         {/* ================================= */}
 
         <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        />
-
-
-        {/* ================================= */}
-        {/* Energy */}
-        {/* ================================= */}
-
-        <Route
-          path="/energy"
+          path="/energy-intelligence"
           element={<Energy />}
         />
 
 
         {/* ================================= */}
-        {/* Sensors */}
+        {/* Module 2 */}
+        {/* Predictive Maintenance */}
         {/* ================================= */}
 
         <Route
-          path="/sensors"
-          element={<Sensors />}
+          path="/predictive-maintenance"
+          element={<PredictiveMaintenance />}
         />
 
 
         {/* ================================= */}
-        {/* Facilities */}
-        {/* ================================= */}
-
-        <Route
-          path="/facilities"
-          element={<Facilities />}
-        />
-
-
-        {/* ================================= */}
-        {/* AI Agent */}
-        {/* ================================= */}
-
-        <Route
-          path="/ai-agent"
-          element={<AIAgent />}
-        />
-
-
-        {/* ================================= */}
-        {/* Milestone 3 */}
+        {/* Module 3 */}
         {/* Occupancy & Security */}
         {/* ================================= */}
 
         <Route
-          path="/security"
+          path="/occupancy-security"
           element={<SecurityDashboard />}
         />
 
 
         {/* ================================= */}
-        {/* Milestone 4 */}
-        {/* Executive Dashboard */}
+        {/* Module 4 */}
+        {/* Cost Optimization */}
         {/* ================================= */}
 
         <Route
-          path="/executive"
+          path="/cost-optimization"
           element={<ExecutiveDashboard />}
         />
+
 
       </Routes>
 

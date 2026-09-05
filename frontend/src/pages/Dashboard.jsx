@@ -1,5 +1,10 @@
-import { Box, Grid } from "@mui/material";
-import { useState, useEffect } from "react";
+import {
+  Box,
+  Grid,
+  Typography
+} from "@mui/material";
+
+import { useState } from "react";
 
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
@@ -11,145 +16,159 @@ import TemperatureHumidityChart from "../components/TemperatureHumidityChart";
 import RecommendationPanel from "../components/RecommendationPanel";
 import FacilityTable from "../components/FacilityTable";
 
-// Predictive Maintenance Components
-import MaintenanceDashboardCards from "../components/maintenance/MaintenanceDashboardCards";
-import HealthDistributionChart from "../components/maintenance/HealthDistributionChart";
-import MaintenancePriorityChart from "../components/maintenance/MaintenancePriorityChart";
-import EquipmentHealthTable from "../components/maintenance/EquipmentHealthTable";
-import MaintenanceScheduleTable from "../components/maintenance/MaintenanceScheduleTable";
-import MaintenanceAlertsTable from "../components/maintenance/MaintenanceAlertsTable";
 
-export default function Dashboard() {
+export default function EnergyIntelligence() {
 
-  const [activeSection, setActiveSection] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
-
-  const drawerWidth = collapsed ? 70 : 220;
-
-  const scrollToSection = (id) => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
-  useEffect(() => {
-
-    const sections = [
-      "dashboard",
-      "energy",
-      "facilities",
-      "sensors",
-      "maintenance",
-      "ai",
-    ];
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        threshold: 0.4,
-      }
-    );
-
-    sections.forEach((id) => {
-      const section = document.getElementById(id);
-      if (section) observer.observe(section);
-    });
-
-    return () => observer.disconnect();
-
-  }, []);
 
   return (
 
-    <Box sx={{ display: "flex", bgcolor: "#f5f7fa" }}>
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        bgcolor: "#f5f7fa"
+      }}
+    >
+
+      {/* ============================== */}
+      {/* Sidebar */}
+      {/* ============================== */}
 
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
-        scrollToSection={scrollToSection}
-        activeSection={activeSection}
       />
 
+
+      {/* ============================== */}
+      {/* Main Content */}
+      {/* ============================== */}
+
       <Box
+        component="main"
         sx={{
-          flex: 1,
-          ml: `${drawerWidth}px`,
-          transition: "margin 0.3s ease",
-          p: 2,
+          flexGrow: 1,
+          minWidth: 0,
+          px: {
+            xs: 2,
+            md: 3
+          },
+          py: 2
         }}
       >
 
-        <Navbar />
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: "1500px",
+            mx: "auto"
+          }}
+        >
 
-        {/* Dashboard */}
+          <Navbar />
 
-        <Box id="dashboard" sx={{ mt: 2 }}>
+
+          {/* ============================== */}
+          {/* Page Heading */}
+          {/* ============================== */}
+
+          <Box sx={{ mt: 3, mb: 3 }}>
+
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+            >
+              ⚡ Energy Intelligence
+            </Typography>
+
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mt: 0.5 }}
+            >
+              Monitor energy consumption,
+              facility performance,
+              environmental conditions and
+              AI-powered energy recommendations.
+            </Typography>
+
+          </Box>
+
+
+          {/* ============================== */}
+          {/* Energy KPI Cards */}
+          {/* ============================== */}
+
           <DashboardCards />
-        </Box>
 
-        {/* Energy */}
 
-        <Grid container spacing={2} sx={{ mt: 1 }}>
+          {/* ============================== */}
+          {/* Energy Analytics */}
+          {/* ============================== */}
 
-          <Grid size={{ xs: 12, lg: 6 }} id="energy">
-            <EnergyChart />
-          </Grid>
+          <Grid
+            container
+            spacing={2}
+            sx={{ mt: 1 }}
+          >
 
-          <Grid size={{ xs: 12, lg: 6 }} id="facilities">
-            <FacilityChart />
-          </Grid>
+            {/* Energy Consumption Trend */}
 
-          <Grid size={{ xs: 12, lg: 6 }} id="sensors">
-            <TemperatureHumidityChart />
-          </Grid>
-
-          <Grid size={{ xs: 12, lg: 6 }} id="ai">
-            <RecommendationPanel />
-          </Grid>
-
-          <Grid size={{ xs: 12 }}>
-            <FacilityTable />
-          </Grid>
-
-        </Grid>
-
-        {/* ================================================= */}
-
-        {/* Predictive Maintenance */}
-
-        <Box id="maintenance" sx={{ mt: 6 }}>
-
-          <h2>Predictive Maintenance</h2>
-
-          <MaintenanceDashboardCards />
-
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-
-            <Grid size={{ xs: 12, lg: 6 }}>
-              <HealthDistributionChart />
+            <Grid
+              size={{
+                xs: 12,
+                lg: 6
+              }}
+            >
+              <EnergyChart />
             </Grid>
 
-            <Grid size={{ xs: 12, lg: 6 }}>
-              <MaintenancePriorityChart />
+
+            {/* Facility Energy Usage */}
+
+            <Grid
+              size={{
+                xs: 12,
+                lg: 6
+              }}
+            >
+              <FacilityChart />
             </Grid>
 
-            <Grid size={{ xs: 12 }}>
-              <EquipmentHealthTable />
+
+            {/* Temperature & Humidity */}
+
+            <Grid
+              size={{
+                xs: 12,
+                lg: 6
+              }}
+            >
+              <TemperatureHumidityChart />
             </Grid>
 
-            <Grid size={{ xs: 12 }}>
-              <MaintenanceScheduleTable />
+
+            {/* AI Recommendations */}
+
+            <Grid
+              size={{
+                xs: 12,
+                lg: 6
+              }}
+            >
+              <RecommendationPanel />
             </Grid>
 
-            <Grid size={{ xs: 12 }}>
-              <MaintenanceAlertsTable />
+
+            {/* Facility Details */}
+
+            <Grid
+              size={{
+                xs: 12
+              }}
+            >
+              <FacilityTable />
             </Grid>
 
           </Grid>
@@ -161,4 +180,5 @@ export default function Dashboard() {
     </Box>
 
   );
+
 }
