@@ -12,6 +12,8 @@ import {
   Typography
 } from "@mui/material";
 
+import { API_BASE_URL } from "../../services/api";
+
 
 function FacilityIntelligenceReport() {
 
@@ -29,9 +31,7 @@ function FacilityIntelligenceReport() {
     setLoading(true);
     setError("");
 
-    fetch(
-      "http://127.0.0.1:8000/facility-intelligence-report"
-    )
+    fetch(`${API_BASE_URL}/facility-intelligence-report`)
 
       .then((response) => {
 
@@ -398,9 +398,7 @@ function FacilityIntelligenceReport() {
 
 
         pdf.text(
-          `Priority: ${
-            item.priority
-          }`,
+          `Priority: ${item.priority}`,
           20,
           y
         );

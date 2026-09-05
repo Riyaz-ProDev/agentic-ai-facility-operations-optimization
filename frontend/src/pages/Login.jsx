@@ -16,6 +16,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { API_BASE_URL } from "../services/api";
+
 
 function Login() {
 
@@ -39,17 +41,23 @@ function Login() {
   const handleLogin = async () => {
 
     if (!username.trim() || !password.trim()) {
-      setError("Please enter username and password.");
+
+      setError(
+        "Please enter username and password."
+      );
+
       return;
     }
+
 
     try {
 
       setLoading(true);
       setError("");
 
+
       const response = await fetch(
-        "http://127.0.0.1:8000/login",
+        `${API_BASE_URL}/login`,
         {
           method: "POST",
 
@@ -65,9 +73,21 @@ function Login() {
       );
 
 
+      if (!response.ok) {
+
+        throw new Error(
+          "Login request failed"
+        );
+
+      }
+
+
       const data = await response.json();
 
-      console.log("Login response:", data);
+      console.log(
+        "Login response:",
+        data
+      );
 
 
       if (data.success === true) {
@@ -77,8 +97,12 @@ function Login() {
           JSON.stringify(data.user)
         );
 
+
         // Redirect after successful login
-        navigate("/energy-intelligence");
+
+        navigate(
+          "/energy-intelligence"
+        );
 
       } else {
 
@@ -91,7 +115,10 @@ function Login() {
 
     } catch (err) {
 
-      console.error("Login Error:", err);
+      console.error(
+        "Login Error:",
+        err
+      );
 
       setError(
         "Unable to connect to FacilityOps server."
@@ -109,7 +136,9 @@ function Login() {
   const handleKeyDown = (event) => {
 
     if (event.key === "Enter") {
+
       handleLogin();
+
     }
 
   };
@@ -268,7 +297,6 @@ function Login() {
 
                   <Typography
                     variant="body1"
-
                     fontWeight={500}
                   >
                     {feature}
@@ -304,7 +332,6 @@ function Login() {
 
             <Typography
               variant="h4"
-
               fontWeight="bold"
 
               sx={{
@@ -317,7 +344,6 @@ function Login() {
 
             <Typography
               variant="body2"
-
               color="text.secondary"
 
               sx={{

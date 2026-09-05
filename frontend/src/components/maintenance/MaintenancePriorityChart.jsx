@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { API_BASE_URL } from "../../services/api";
 import {
   ResponsiveContainer,
   BarChart,
@@ -25,8 +25,8 @@ export default function MaintenancePriorityChart() {
     try {
 
       const res = await axios.get(
-        "http://127.0.0.1:8000/maintenance-priority"
-      );
+  `${API_BASE_URL}/maintenance-priority`
+);
 
       setData(res.data);
 

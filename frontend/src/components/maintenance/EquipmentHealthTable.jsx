@@ -13,6 +13,9 @@ import {
   TableContainer,
 } from "@mui/material";
 
+import { API_BASE_URL } from "../../services/api";
+
+
 export default function EquipmentHealthTable() {
   const [data, setData] = useState([]);
 
@@ -23,12 +26,15 @@ export default function EquipmentHealthTable() {
   const loadData = async () => {
     try {
       const res = await axios.get(
-        "http://127.0.0.1:8000/equipment-health"
+        `${API_BASE_URL}/equipment-health`
       );
 
       setData(res.data);
     } catch (error) {
-      console.log(error);
+      console.error(
+        "Equipment Health Error:",
+        error
+      );
     }
   };
 
@@ -69,17 +75,29 @@ export default function EquipmentHealthTable() {
 
             <TableRow>
 
-              <TableCell><b>Asset ID</b></TableCell>
+              <TableCell>
+                <b>Asset ID</b>
+              </TableCell>
 
-              <TableCell><b>Health Score</b></TableCell>
+              <TableCell>
+                <b>Health Score</b>
+              </TableCell>
 
-              <TableCell><b>Status</b></TableCell>
+              <TableCell>
+                <b>Status</b>
+              </TableCell>
 
-              <TableCell><b>Temperature (°C)</b></TableCell>
+              <TableCell>
+                <b>Temperature (°C)</b>
+              </TableCell>
 
-              <TableCell><b>Vibration</b></TableCell>
+              <TableCell>
+                <b>Vibration</b>
+              </TableCell>
 
-              <TableCell><b>Pressure</b></TableCell>
+              <TableCell>
+                <b>Pressure</b>
+              </TableCell>
 
             </TableRow>
 
@@ -91,9 +109,13 @@ export default function EquipmentHealthTable() {
 
               <TableRow key={item.health_id}>
 
-                <TableCell>{item.asset_id}</TableCell>
+                <TableCell>
+                  {item.asset_id}
+                </TableCell>
 
-                <TableCell>{item.health_score}</TableCell>
+                <TableCell>
+                  {item.health_score}
+                </TableCell>
 
                 <TableCell>
 
@@ -105,11 +127,17 @@ export default function EquipmentHealthTable() {
 
                 </TableCell>
 
-                <TableCell>{item.temperature_c}</TableCell>
+                <TableCell>
+                  {item.temperature_c}
+                </TableCell>
 
-                <TableCell>{item.vibration_mm_s}</TableCell>
+                <TableCell>
+                  {item.vibration_mm_s}
+                </TableCell>
 
-                <TableCell>{item.pressure_psi}</TableCell>
+                <TableCell>
+                  {item.pressure_psi}
+                </TableCell>
 
               </TableRow>
 

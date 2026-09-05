@@ -16,12 +16,23 @@ import {
   CartesianGrid
 } from "recharts";
 
+import { API_BASE_URL } from "../../services/api";
+
+
 function CostDistributionChart() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/cost-distribution")
-      .then((res) => res.json())
+    fetch(`${API_BASE_URL}/cost-distribution`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(
+            "Failed to fetch cost distribution data"
+          );
+        }
+
+        return res.json();
+      })
       .then((result) => {
         setData(result);
       })

@@ -11,6 +11,8 @@ import {
   Typography
 } from "@mui/material";
 
+import { API_BASE_URL } from "../../services/api";
+
 
 function AgentPerformancePanel() {
 
@@ -20,7 +22,7 @@ function AgentPerformancePanel() {
 
   useEffect(() => {
 
-    fetch("http://127.0.0.1:8000/agent-performance")
+    fetch(`${API_BASE_URL}/agent-performance`)
 
       .then((response) => {
 

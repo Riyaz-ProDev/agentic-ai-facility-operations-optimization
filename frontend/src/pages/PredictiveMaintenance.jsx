@@ -18,12 +18,13 @@ import {
   Chip,
   LinearProgress,
   Avatar,
-  Stack,
-  Divider
+  Stack
 } from "@mui/material";
 
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+
+import { API_BASE_URL } from "../services/api";
 
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
@@ -32,6 +33,7 @@ import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import BuildCircleIcon from "@mui/icons-material/BuildCircle";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import InsightsIcon from "@mui/icons-material/Insights";
+
 
 function PredictiveMaintenance() {
 
@@ -45,9 +47,11 @@ function PredictiveMaintenance() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+
   useEffect(() => {
     loadData();
   }, []);
+
 
   const loadData = async () => {
 
@@ -62,10 +66,10 @@ function PredictiveMaintenance() {
         scheduleRes,
         alertRes
       ] = await Promise.all([
-        axios.get("http://127.0.0.1:8000/maintenance-dashboard"),
-        axios.get("http://127.0.0.1:8000/equipment-health"),
-        axios.get("http://127.0.0.1:8000/maintenance-schedule"),
-        axios.get("http://127.0.0.1:8000/recent-maintenance-alerts")
+        axios.get(`${API_BASE_URL}/maintenance-dashboard`),
+        axios.get(`${API_BASE_URL}/equipment-health`),
+        axios.get(`${API_BASE_URL}/maintenance-schedule`),
+        axios.get(`${API_BASE_URL}/recent-maintenance-alerts`)
       ]);
 
       setDashboard(dashboardRes.data);
@@ -75,7 +79,10 @@ function PredictiveMaintenance() {
 
     } catch (err) {
 
-      console.error("Predictive Maintenance Error:", err);
+      console.error(
+        "Predictive Maintenance Error:",
+        err
+      );
 
       setError(
         "Unable to load predictive maintenance data."
@@ -89,33 +96,55 @@ function PredictiveMaintenance() {
 
   };
 
+
   const getStatusColor = (status) => {
 
-    const value = String(status || "").toLowerCase();
+    const value = String(
+      status || ""
+    ).toLowerCase();
 
-    if (value.includes("healthy")) return "success";
+    if (value.includes("healthy")) {
+      return "success";
+    }
 
-    if (value.includes("critical")) return "error";
+    if (value.includes("critical")) {
+      return "error";
+    }
 
-    if (value.includes("high")) return "error";
+    if (value.includes("high")) {
+      return "error";
+    }
 
-    if (value.includes("warning")) return "warning";
+    if (value.includes("warning")) {
+      return "warning";
+    }
 
-    if (value.includes("medium")) return "warning";
+    if (value.includes("medium")) {
+      return "warning";
+    }
 
     return "default";
+
   };
+
 
   const getScoreColor = (score) => {
 
-    if (score >= 80) return "#16a34a";
+    if (score >= 80) {
+      return "#16a34a";
+    }
 
-    if (score >= 50) return "#f59e0b";
+    if (score >= 50) {
+      return "#f59e0b";
+    }
 
     return "#dc2626";
+
   };
 
+
   const cards = [
+
     {
       title: "Total Assets",
       value: dashboard.total_assets ?? 0,
@@ -124,6 +153,7 @@ function PredictiveMaintenance() {
       color: "#2563eb",
       bg: "#dbeafe"
     },
+
     {
       title: "Healthy Assets",
       value: dashboard.healthy_assets ?? 0,
@@ -132,6 +162,7 @@ function PredictiveMaintenance() {
       color: "#16a34a",
       bg: "#dcfce7"
     },
+
     {
       title: "Critical Assets",
       value: dashboard.critical_assets ?? 0,
@@ -140,6 +171,7 @@ function PredictiveMaintenance() {
       color: "#dc2626",
       bg: "#fee2e2"
     },
+
     {
       title: "Active Alerts",
       value: dashboard.active_alerts ?? 0,
@@ -148,7 +180,9 @@ function PredictiveMaintenance() {
       color: "#ea580c",
       bg: "#ffedd5"
     }
+
   ];
+
 
   return (
 
@@ -164,6 +198,7 @@ function PredictiveMaintenance() {
         collapsed={collapsed}
         setCollapsed={setCollapsed}
       />
+
 
       <Box
         component="main"
@@ -186,6 +221,7 @@ function PredictiveMaintenance() {
         >
 
           <Navbar />
+
 
           {/* HERO HEADER */}
 
@@ -214,9 +250,11 @@ function PredictiveMaintenance() {
                 width: 180,
                 height: 180,
                 borderRadius: "50%",
-                bgcolor: "rgba(255,255,255,0.08)"
+                bgcolor:
+                  "rgba(255,255,255,0.08)"
               }}
             />
+
 
             <Stack
               direction="row"
@@ -226,13 +264,15 @@ function PredictiveMaintenance() {
 
               <Avatar
                 sx={{
-                  bgcolor: "rgba(255,255,255,0.18)",
+                  bgcolor:
+                    "rgba(255,255,255,0.18)",
                   width: 60,
                   height: 60
                 }}
               >
-                <BuildCircleIcon fontSize="large"/>
+                <BuildCircleIcon fontSize="large" />
               </Avatar>
+
 
               <Box>
 
@@ -243,13 +283,15 @@ function PredictiveMaintenance() {
                   Predictive Maintenance
                 </Typography>
 
+
                 <Typography
                   sx={{
                     opacity: 0.9,
                     mt: 0.5
                   }}
                 >
-                  AI-powered equipment health monitoring and intelligent maintenance planning.
+                  AI-powered equipment health monitoring
+                  and intelligent maintenance planning.
                 </Typography>
 
               </Box>
@@ -257,6 +299,9 @@ function PredictiveMaintenance() {
             </Stack>
 
           </Box>
+
+
+          {/* ERROR */}
 
           {error && (
 
@@ -269,6 +314,9 @@ function PredictiveMaintenance() {
 
           )}
 
+
+          {/* LOADING */}
+
           {loading ? (
 
             <Box
@@ -278,7 +326,7 @@ function PredictiveMaintenance() {
                 py: 12
               }}
             >
-              <CircularProgress size={45}/>
+              <CircularProgress size={45} />
             </Box>
 
           ) : (
@@ -304,10 +352,13 @@ function PredictiveMaintenance() {
                       sx={{
                         borderRadius: 4,
                         height: "100%",
-                        border: "1px solid #eef2f7",
+                        border:
+                          "1px solid #eef2f7",
                         transition: "0.25s",
+
                         "&:hover": {
-                          transform: "translateY(-6px)",
+                          transform:
+                            "translateY(-6px)",
                           boxShadow: 6
                         }
                       }}
@@ -330,6 +381,7 @@ function PredictiveMaintenance() {
                               {card.title}
                             </Typography>
 
+
                             <Typography
                               variant="h4"
                               fontWeight="bold"
@@ -343,6 +395,7 @@ function PredictiveMaintenance() {
 
                           </Box>
 
+
                           <Avatar
                             sx={{
                               bgcolor: card.bg,
@@ -355,6 +408,7 @@ function PredictiveMaintenance() {
                           </Avatar>
 
                         </Stack>
+
 
                         <Typography
                           variant="caption"
@@ -377,6 +431,7 @@ function PredictiveMaintenance() {
 
               </Grid>
 
+
               {/* EQUIPMENT HEALTH */}
 
               <Card
@@ -393,7 +448,8 @@ function PredictiveMaintenance() {
                     py: 2,
                     background:
                       "linear-gradient(90deg,#ffffff,#fff7ed)",
-                    borderBottom: "1px solid #eee"
+                    borderBottom:
+                      "1px solid #eee"
                   }}
                 >
 
@@ -403,7 +459,8 @@ function PredictiveMaintenance() {
                     alignItems="center"
                   >
 
-                    <InsightsIcon color="warning"/>
+                    <InsightsIcon color="warning" />
+
 
                     <Typography
                       variant="h6"
@@ -414,15 +471,18 @@ function PredictiveMaintenance() {
 
                   </Stack>
 
+
                   <Typography
                     variant="body2"
                     color="text.secondary"
                     sx={{ mt: 0.5 }}
                   >
-                    Real-time AI assessment of equipment condition.
+                    Real-time AI assessment of
+                    equipment condition.
                   </Typography>
 
                 </Box>
+
 
                 <TableContainer>
 
@@ -452,23 +512,34 @@ function PredictiveMaintenance() {
 
                     </TableHead>
 
+
                     <TableBody>
 
                       {health
-                        .slice(0,10)
-                        .map((item)=>(
+                        .slice(0, 10)
+                        .map((item) => (
+
                           <TableRow
                             key={item.health_id}
                             hover
                           >
 
                             <TableCell>
-                              <Typography fontWeight={600}>
+
+                              <Typography
+                                fontWeight={600}
+                              >
                                 {item.asset_id}
                               </Typography>
+
                             </TableCell>
 
-                            <TableCell sx={{ minWidth: 180 }}>
+
+                            <TableCell
+                              sx={{
+                                minWidth: 180
+                              }}
+                            >
 
                               <Stack spacing={0.7}>
 
@@ -477,9 +548,12 @@ function PredictiveMaintenance() {
                                   justifyContent="space-between"
                                 >
 
-                                  <Typography fontWeight={600}>
+                                  <Typography
+                                    fontWeight={600}
+                                  >
                                     {item.health_score}
                                   </Typography>
+
 
                                   <Typography
                                     variant="caption"
@@ -490,17 +564,28 @@ function PredictiveMaintenance() {
 
                                 </Stack>
 
+
                                 <LinearProgress
                                   variant="determinate"
-                                  value={item.health_score}
+                                  value={Math.min(
+                                    Number(
+                                      item.health_score || 0
+                                    ),
+                                    100
+                                  )}
                                   sx={{
                                     height: 8,
                                     borderRadius: 5,
                                     bgcolor: "#e5e7eb",
-                                    "& .MuiLinearProgress-bar":{
-                                      bgcolor:getScoreColor(item.health_score),
-                                      borderRadius: 5
-                                    }
+
+                                    "& .MuiLinearProgress-bar":
+                                      {
+                                        bgcolor:
+                                          getScoreColor(
+                                            item.health_score
+                                          ),
+                                        borderRadius: 5
+                                      }
                                   }}
                                 />
 
@@ -508,18 +593,26 @@ function PredictiveMaintenance() {
 
                             </TableCell>
 
+
                             <TableCell>
 
                               <Chip
-                                label={item.health_status}
-                                color={getStatusColor(item.health_status)}
+                                label={
+                                  item.health_status
+                                }
+                                color={getStatusColor(
+                                  item.health_status
+                                )}
                                 size="small"
-                                sx={{ fontWeight: 600 }}
+                                sx={{
+                                  fontWeight: 600
+                                }}
                               />
 
                             </TableCell>
 
                           </TableRow>
+
                         ))}
 
                     </TableBody>
@@ -529,6 +622,7 @@ function PredictiveMaintenance() {
                 </TableContainer>
 
               </Card>
+
 
               {/* MAINTENANCE SCHEDULE */}
 
@@ -546,7 +640,8 @@ function PredictiveMaintenance() {
                     py: 2,
                     background:
                       "linear-gradient(90deg,#ffffff,#eff6ff)",
-                    borderBottom: "1px solid #eee"
+                    borderBottom:
+                      "1px solid #eee"
                   }}
                 >
 
@@ -556,7 +651,8 @@ function PredictiveMaintenance() {
                     alignItems="center"
                   >
 
-                    <CalendarMonthIcon color="primary"/>
+                    <CalendarMonthIcon color="primary" />
+
 
                     <Typography
                       variant="h6"
@@ -567,15 +663,18 @@ function PredictiveMaintenance() {
 
                   </Stack>
 
+
                   <Typography
                     variant="body2"
                     color="text.secondary"
                     sx={{ mt: 0.5 }}
                   >
-                    AI predicted maintenance planning for critical assets.
+                    AI predicted maintenance planning
+                    for critical assets.
                   </Typography>
 
                 </Box>
+
 
                 <TableContainer>
 
@@ -585,50 +684,71 @@ function PredictiveMaintenance() {
 
                       <TableRow
                         sx={{
-                          bgcolor:"#f8fafc"
+                          bgcolor: "#f8fafc"
                         }}
                       >
 
-                        <TableCell><b>Asset</b></TableCell>
-                        <TableCell><b>Predicted Date</b></TableCell>
-                        <TableCell><b>Priority</b></TableCell>
+                        <TableCell>
+                          <b>Asset</b>
+                        </TableCell>
+
+                        <TableCell>
+                          <b>Predicted Date</b>
+                        </TableCell>
+
+                        <TableCell>
+                          <b>Priority</b>
+                        </TableCell>
 
                       </TableRow>
 
                     </TableHead>
 
+
                     <TableBody>
 
                       {schedule
-                        .slice(0,10)
-                        .map((item)=>(
+                        .slice(0, 10)
+                        .map((item) => (
+
                           <TableRow
                             key={item.schedule_id}
                             hover
                           >
 
                             <TableCell>
-                              <Typography fontWeight={600}>
+
+                              <Typography
+                                fontWeight={600}
+                              >
                                 {item.asset_id}
                               </Typography>
+
                             </TableCell>
+
 
                             <TableCell>
                               {item.predicted_date}
                             </TableCell>
 
+
                             <TableCell>
 
                               <Chip
                                 label={item.priority}
-                                color={getStatusColor(item.priority)}
+                                color={getStatusColor(
+                                  item.priority
+                                )}
                                 size="small"
-                                sx={{ fontWeight:600 }}
+                                sx={{
+                                  fontWeight: 600
+                                }}
                               />
 
                             </TableCell>
 
                           </TableRow>
+
                         ))}
 
                     </TableBody>
@@ -639,24 +759,26 @@ function PredictiveMaintenance() {
 
               </Card>
 
+
               {/* ALERTS */}
 
               <Card
                 sx={{
-                  mt:3,
-                  mb:5,
-                  borderRadius:4,
-                  overflow:"hidden"
+                  mt: 3,
+                  mb: 5,
+                  borderRadius: 4,
+                  overflow: "hidden"
                 }}
               >
 
                 <Box
                   sx={{
-                    px:3,
-                    py:2,
+                    px: 3,
+                    py: 2,
                     background:
                       "linear-gradient(90deg,#ffffff,#fef2f2)",
-                    borderBottom:"1px solid #eee"
+                    borderBottom:
+                      "1px solid #eee"
                   }}
                 >
 
@@ -666,7 +788,8 @@ function PredictiveMaintenance() {
                     alignItems="center"
                   >
 
-                    <NotificationsActiveIcon color="error"/>
+                    <NotificationsActiveIcon color="error" />
+
 
                     <Typography
                       variant="h6"
@@ -677,15 +800,18 @@ function PredictiveMaintenance() {
 
                   </Stack>
 
+
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ mt:0.5 }}
+                    sx={{ mt: 0.5 }}
                   >
-                    Live alerts generated from predictive monitoring agents.
+                    Live alerts generated from
+                    predictive monitoring agents.
                   </Typography>
 
                 </Box>
+
 
                 <TableContainer>
 
@@ -695,21 +821,31 @@ function PredictiveMaintenance() {
 
                       <TableRow
                         sx={{
-                          bgcolor:"#f8fafc"
+                          bgcolor: "#f8fafc"
                         }}
                       >
 
-                        <TableCell><b>Asset</b></TableCell>
-                        <TableCell><b>Severity</b></TableCell>
-                        <TableCell><b>Alert Message</b></TableCell>
+                        <TableCell>
+                          <b>Asset</b>
+                        </TableCell>
+
+                        <TableCell>
+                          <b>Severity</b>
+                        </TableCell>
+
+                        <TableCell>
+                          <b>Alert Message</b>
+                        </TableCell>
 
                       </TableRow>
 
                     </TableHead>
 
+
                     <TableBody>
 
-                      {alerts.map((item)=>(
+                      {alerts.map((item) => (
+
                         <TableRow
                           key={item.alert_id}
                           hover
@@ -717,28 +853,37 @@ function PredictiveMaintenance() {
 
                           <TableCell>
 
-                            <Typography fontWeight={600}>
+                            <Typography
+                              fontWeight={600}
+                            >
                               {item.asset_id}
                             </Typography>
 
                           </TableCell>
 
+
                           <TableCell>
 
                             <Chip
                               label={item.severity}
-                              color={getStatusColor(item.severity)}
+                              color={getStatusColor(
+                                item.severity
+                              )}
                               size="small"
-                              sx={{ fontWeight:600 }}
+                              sx={{
+                                fontWeight: 600
+                              }}
                             />
 
                           </TableCell>
+
 
                           <TableCell>
                             {item.message}
                           </TableCell>
 
                         </TableRow>
+
                       ))}
 
                     </TableBody>
@@ -760,6 +905,8 @@ function PredictiveMaintenance() {
     </Box>
 
   );
+
 }
+
 
 export default PredictiveMaintenance;

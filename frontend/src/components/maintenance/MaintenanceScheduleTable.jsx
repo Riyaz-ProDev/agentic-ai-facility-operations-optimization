@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { API_BASE_URL } from "../../services/api";
 import {
   Paper,
   Typography,
@@ -26,8 +26,8 @@ export default function MaintenanceScheduleTable() {
     try {
 
       const res = await axios.get(
-        "http://127.0.0.1:8000/maintenance-schedule"
-      );
+  `${API_BASE_URL}/maintenance-schedule`
+);
 
       setData(res.data);
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../services/api";
 
 import {
   Box,
@@ -40,6 +41,7 @@ import FacilityIntelligenceReport
 
 
 // Icons
+
 import SavingsIcon
   from "@mui/icons-material/Savings";
 
@@ -83,7 +85,7 @@ function ExecutiveDashboard() {
   useEffect(() => {
 
     fetch(
-      "http://127.0.0.1:8000/enterprise-intelligence"
+      `${API_BASE_URL}/enterprise-intelligence`
     )
 
       .then((response) => {
@@ -188,9 +190,7 @@ function ExecutiveDashboard() {
       }}
     >
 
-      {/* ================================= */}
       {/* Sidebar */}
-      {/* ================================= */}
 
       <Sidebar
         collapsed={collapsed}
@@ -198,9 +198,7 @@ function ExecutiveDashboard() {
       />
 
 
-      {/* ================================= */}
       {/* Main */}
-      {/* ================================= */}
 
       <Box
         component="main"
@@ -226,16 +224,10 @@ function ExecutiveDashboard() {
           }}
         >
 
-          {/* ================================= */}
-          {/* Navbar */}
-          {/* ================================= */}
-
           <Navbar />
 
 
-          {/* ================================= */}
           {/* Cost Optimization Hero */}
-          {/* ================================= */}
 
           <Box
             sx={{
@@ -261,8 +253,6 @@ function ExecutiveDashboard() {
                 "0 12px 30px rgba(5, 150, 105, 0.20)"
             }}
           >
-
-            {/* Decorative circle */}
 
             <Box
               sx={{
@@ -320,8 +310,6 @@ function ExecutiveDashboard() {
                 zIndex: 1
               }}
             >
-
-              {/* Left */}
 
               <Stack
                 direction="row"
@@ -383,8 +371,6 @@ function ExecutiveDashboard() {
               </Stack>
 
 
-              {/* Right */}
-
               <Stack
                 direction="row"
                 spacing={1}
@@ -442,9 +428,7 @@ function ExecutiveDashboard() {
           </Box>
 
 
-          {/* ================================= */}
           {/* Error */}
-          {/* ================================= */}
 
           {error && (
 
@@ -461,9 +445,7 @@ function ExecutiveDashboard() {
           )}
 
 
-          {/* ================================= */}
           {/* Intelligence Features */}
-          {/* ================================= */}
 
           <SectionContainer
             icon={
@@ -482,9 +464,7 @@ function ExecutiveDashboard() {
           </SectionContainer>
 
 
-          {/* ================================= */}
           {/* Executive KPI Cards */}
-          {/* ================================= */}
 
           <SectionContainer
             icon={
@@ -505,9 +485,7 @@ function ExecutiveDashboard() {
           </SectionContainer>
 
 
-          {/* ================================= */}
           {/* Cost + Sustainability */}
-          {/* ================================= */}
 
           <Grid
             container
@@ -573,9 +551,7 @@ function ExecutiveDashboard() {
           </Grid>
 
 
-          {/* ================================= */}
           {/* Resource Utilization */}
-          {/* ================================= */}
 
           <SectionContainer
             icon={
@@ -596,9 +572,7 @@ function ExecutiveDashboard() {
           </SectionContainer>
 
 
-          {/* ================================= */}
           {/* AI Agent Performance */}
-          {/* ================================= */}
 
           <SectionContainer
             icon={
@@ -617,9 +591,7 @@ function ExecutiveDashboard() {
           </SectionContainer>
 
 
-          {/* ================================= */}
           {/* Cost Recommendations */}
-          {/* ================================= */}
 
           <SectionContainer
             icon={
@@ -638,9 +610,7 @@ function ExecutiveDashboard() {
           </SectionContainer>
 
 
-          {/* ================================= */}
           {/* Intelligence Report */}
-          {/* ================================= */}
 
           <SectionContainer
             icon={

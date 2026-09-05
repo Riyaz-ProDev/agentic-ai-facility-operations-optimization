@@ -13,29 +13,40 @@ import {
   Chip,
 } from "@mui/material";
 
+import { API_BASE_URL } from "../../services/api";
+
+
 export default function MaintenanceAlertsTable() {
 
   const [data, setData] = useState([]);
 
+
   useEffect(() => {
     loadData();
   }, []);
+
 
   const loadData = async () => {
 
     try {
 
       const res = await axios.get(
-        "http://127.0.0.1:8000/recent-maintenance-alerts"
+        `${API_BASE_URL}/recent-maintenance-alerts`
       );
 
       setData(res.data);
 
     } catch (error) {
-      console.log(error);
+
+      console.error(
+        "Maintenance Alerts Error:",
+        error
+      );
+
     }
 
   };
+
 
   const getSeverityColor = (severity) => {
 
@@ -60,9 +71,13 @@ export default function MaintenanceAlertsTable() {
 
   };
 
+
   return (
 
-    <Paper elevation={3} sx={{ p: 2 }}>
+    <Paper
+      elevation={3}
+      sx={{ p: 2 }}
+    >
 
       <Typography
         variant="h6"
@@ -70,6 +85,7 @@ export default function MaintenanceAlertsTable() {
       >
         Recent Maintenance Alerts
       </Typography>
+
 
       <TableContainer>
 
@@ -79,19 +95,30 @@ export default function MaintenanceAlertsTable() {
 
             <TableRow>
 
-              <TableCell><b>Asset ID</b></TableCell>
+              <TableCell>
+                <b>Asset ID</b>
+              </TableCell>
 
-              <TableCell><b>Alert Type</b></TableCell>
+              <TableCell>
+                <b>Alert Type</b>
+              </TableCell>
 
-              <TableCell><b>Severity</b></TableCell>
+              <TableCell>
+                <b>Severity</b>
+              </TableCell>
 
-              <TableCell><b>Message</b></TableCell>
+              <TableCell>
+                <b>Message</b>
+              </TableCell>
 
-              <TableCell><b>Status</b></TableCell>
+              <TableCell>
+                <b>Status</b>
+              </TableCell>
 
             </TableRow>
 
           </TableHead>
+
 
           <TableBody>
 
@@ -99,23 +126,33 @@ export default function MaintenanceAlertsTable() {
 
               <TableRow key={item.alert_id}>
 
-                <TableCell>{item.asset_id}</TableCell>
+                <TableCell>
+                  {item.asset_id}
+                </TableCell>
 
-                <TableCell>{item.alert_type}</TableCell>
+                <TableCell>
+                  {item.alert_type}
+                </TableCell>
 
                 <TableCell>
 
                   <Chip
                     label={item.severity}
-                    color={getSeverityColor(item.severity)}
+                    color={getSeverityColor(
+                      item.severity
+                    )}
                     size="small"
                   />
 
                 </TableCell>
 
-                <TableCell>{item.message}</TableCell>
+                <TableCell>
+                  {item.message}
+                </TableCell>
 
-                <TableCell>{item.status}</TableCell>
+                <TableCell>
+                  {item.status}
+                </TableCell>
 
               </TableRow>
 

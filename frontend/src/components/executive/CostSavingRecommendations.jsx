@@ -8,6 +8,8 @@ import {
   Typography
 } from "@mui/material";
 
+import { API_BASE_URL } from "../../services/api";
+
 
 function CostSavingRecommendations() {
 
@@ -17,7 +19,7 @@ function CostSavingRecommendations() {
 
   useEffect(() => {
 
-    fetch("http://127.0.0.1:8000/cost-optimization")
+    fetch(`${API_BASE_URL}/cost-optimization`)
 
       .then((response) => {
 
