@@ -24,6 +24,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "https://agentic-ai-facility-operations-eqrm.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
