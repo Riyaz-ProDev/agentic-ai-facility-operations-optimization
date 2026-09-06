@@ -6,6 +6,11 @@ An AI-powered facility management platform that uses intelligent agents to monit
 
 👉 [Launch FacilityOps](https://agentic-ai-facility-operations-eqrm.onrender.com)
 
+### 🔐 Demo Login
+
+- **Username:** `admin`
+- **Password:** `Admin`
+- 
 ## ✨ Key Modules
 
 ### ⚡ Milestone 1 — Energy Intelligence
