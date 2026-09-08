@@ -10,7 +10,7 @@ An AI-powered facility management platform that uses intelligent agents to monit
 
 - **Username:** `admin`
 - **Password:** `Admin`
-- 
+  
 ## ✨ Key Modules
 
 ### ⚡ Milestone 1 — Energy Intelligence
